@@ -26,16 +26,21 @@ func main() {
 	router.GET("/albums", getAlbums)
 	router.POST("/albums", postAlbums)
 
-	port := os.Getenv("PORT")
-
-	if port == "" {
-		port = "3000"
-	}
+	var port = envPortOr("3000")
 
 	router.Run("0.0.0.0:" + port)
+
 }
 func getAlbums(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, albums)
+}
+func envPortOr(port string) string {
+	// If `PORT` variable in environment exists, return it
+	if envPort := os.Getenv("PORT"); envPort != "" {
+		return ":" + envPort
+	}
+	// Otherwise, return the value of `port` variable from function argument
+	return ":" + port
 }
 func postAlbums(c *gin.Context) {
 	var newAlbum album
