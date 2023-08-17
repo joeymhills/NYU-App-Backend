@@ -25,7 +25,7 @@ func main() {
 	router.GET("/albums", getAlbums)
 	router.POST("/albums", postAlbums)
 
-	router.Run("localhost:8080")
+	router.Run("https://fiber-test-production.up.railway.app")
 }
 func getAlbums(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, albums)
