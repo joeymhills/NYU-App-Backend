@@ -28,7 +28,7 @@ func main() {
 
 	var port = envPortOr("3000")
 
-	router.Run("0.0.0.0:" + port)
+	router.Run("0.0.0.0" + port)
 
 }
 func getAlbums(c *gin.Context) {
