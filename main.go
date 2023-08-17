@@ -1,55 +1,45 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
-	"log"
 	"net/http"
-	"os"
 
-	_ "github.com/go-sql-driver/mysql"
+	"github.com/gin-gonic/gin"
 )
 
-type users struct {
-	ID   string `json:"userId"`
-	Name string `json:"name"`
-	Role string `json:"role"`
+type album struct {
+	ID     string  `json:"id"`
+	Title  string  `json:"title"`
+	Artist string  `json:"artist"`
+	Price  float64 `json:"price"`
 }
 
-func homePage(w http.ResponseWriter, r *http.Request) {
-
-	fmt.Println("Endpoint Hit: homePage")
+// albums slice to seed record album data.
+var albums = []album{
+	{ID: "1", Title: "Blue Train", Artist: "John Coltrane", Price: 56.99},
+	{ID: "2", Title: "Jeru", Artist: "Gerry Mulligan", Price: 17.99},
+	{ID: "3", Title: "Sarah Vaughan and Clifford Brown", Artist: "Sarah Vaughan", Price: 39.99},
 }
 
-func handleRequests() {
-	http.HandleFunc("/", homePage)
-	log.Fatal(http.ListenAndServe(":3000", nil))
-}
 func main() {
+	router := gin.Default()
+	router.GET("/albums", getAlbums)
+	router.POST("/albums", postAlbums)
 
-	db, err := sql.Open("mysql", os.Getenv("DSN"))
-	// if there is an error opening the connection, handle it
-	if err != nil {
-		log.Fatalf("failed to connect: %v", err)
-	}
-	defer db.Close()
+	router.Run("localhost:8080")
+}
+func getAlbums(c *gin.Context) {
+	c.IndentedJSON(http.StatusOK, albums)
+}
+func postAlbums(c *gin.Context) {
+	var newAlbum album
 
-	results, err := db.Query("SELECT * FROM user")
-	if err != nil {
-		log.Fatalf("failed to query: %v", err)
-	}
-
-	for results.Next() {
-		var users users
-		// for each row, scan the result into our tag composite object
-		err := results.Scan(&users.ID, &users.Name, &users.Role)
-		if err != nil {
-			log.Printf("error in scanner: %v", err) // proper error handling instead of panic in your app
-		}
-		// and then print out the tag's Name attribute
-		log.Printf(users.Name)
+	// Call BindJSON to bind the received JSON to
+	// newAlbum.
+	if err := c.BindJSON(&newAlbum); err != nil {
+		return
 	}
 
-	handleRequests()
-
+	// Add the new album to the slice.
+	albums = append(albums, newAlbum)
+	c.IndentedJSON(http.StatusCreated, newAlbum)
 }
