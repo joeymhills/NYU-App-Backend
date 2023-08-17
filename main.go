@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
@@ -25,7 +26,13 @@ func main() {
 	router.GET("/albums", getAlbums)
 	router.POST("/albums", postAlbums)
 
-	router.Run(`0.0.0.0:$PORT`)
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		port = "3000"
+	}
+
+	router.Run("0.0.0.0:" + port)
 }
 func getAlbums(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, albums)
