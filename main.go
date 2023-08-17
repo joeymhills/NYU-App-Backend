@@ -22,6 +22,7 @@ var albums = []album{
 }
 
 func main() {
+	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	router.GET("/albums", getAlbums)
 	router.POST("/albums", postAlbums)
@@ -34,6 +35,7 @@ func main() {
 func getAlbums(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, albums)
 }
+
 func envPortOr(port string) string {
 	// If `PORT` variable in environment exists, return it
 	if envPort := os.Getenv("PORT"); envPort != "" {
@@ -42,6 +44,7 @@ func envPortOr(port string) string {
 	// Otherwise, return the value of `port` variable from function argument
 	return ":" + port
 }
+
 func postAlbums(c *gin.Context) {
 	var newAlbum album
 
