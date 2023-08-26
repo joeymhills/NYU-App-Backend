@@ -10,7 +10,9 @@ func main() {
 	router := gin.Default()
 
 	router.GET("/albums", func(c *gin.Context) {
-		
+			c.JSON(200, gin.H{
+			"message": "pong",
+		})	
 	})
 	var port = envPortOr("3000")
 
