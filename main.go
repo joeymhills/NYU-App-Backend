@@ -57,7 +57,7 @@ func getRoot(w http.ResponseWriter, r *http.Request) {
 
 func getUsers(w http.ResponseWriter, r *http.Request) {
 
-	db, err := sql.Open("mysql", "65xjbvp99e06f6krzt0x:pscale_pw_ztGVHxT3MSn3zTpg4741B1a9EYn7NZXiOCbVgJtFzxV@tcp(aws.connect.psdb.cloud)/nyu-db?tls=true&interpolateParams=true")
+	db, err := sql.Open("mysql", os.Getenv(DSN))
 
 	if err != nil {
 
