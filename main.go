@@ -57,7 +57,7 @@ func getRoot(w http.ResponseWriter, r *http.Request) {
 
 func getUsers(w http.ResponseWriter, r *http.Request) {
 
-	db, err := sql.Open("mysql", os.Getenv(DSN))
+	db, err := sql.Open("mysql", os.Getenv("DSN"))
 
 	if err != nil {
 
