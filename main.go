@@ -55,7 +55,7 @@ func getUsers(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 
 		users := []User{}
 
-		results, err := db.Query("SELECT id, email, name, role FROM user WHERE role = 'user'")
+		results, err := db.Query("SELECT id, email, name, role FROM user")
 		if err != nil {
 			panic(err.Error())
 		}
@@ -70,7 +70,7 @@ func getUsers(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 			}
 			users = append(users, person)
 		}
-
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(users)
 	}
