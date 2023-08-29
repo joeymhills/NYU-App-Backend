@@ -159,8 +159,8 @@ func main() {
 
 	http.HandleFunc("/getunauthorized", getUnauthorized(db))
 	http.HandleFunc("/getusers", getUsers(db))
-	http.HandleFunc("/getuanagers", getManagers(db))
-	http.HandleFunc("/getadmin", getAdmins(db))
+	http.HandleFunc("/getmanagers", getManagers(db))
+	http.HandleFunc("/getadmins", getAdmins(db))
 
 	port := os.Getenv("PORT")
 
