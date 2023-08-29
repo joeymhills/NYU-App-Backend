@@ -3,8 +3,6 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -42,6 +40,9 @@ type Employee struct {
 	Name string `json:"name"`
 	ID   int    `json:"id"`
 }
+type DB struct {
+	*sql.DB
+}
 type User struct {
 	Id       int    `json:"id"`
 	Email    string `json:"email"`
@@ -50,48 +51,39 @@ type User struct {
 	Role     string `json:"role"`
 }
 
-func getRoot(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("got / request\n")
-	io.WriteString(w, "This is my website!\n")
-}
+func getUsers(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 
-func getUsers(w http.ResponseWriter, r *http.Request) {
+		users := []User{}
 
-	db, err := sql.Open("mysql", os.Getenv("DSN"))
-
-	if err != nil {
-
-		log.Fatalf("failed to connect: %v", err)
-
-	}
-
-	defer db.Close()
-
-	users := []User{}
-
-	results, err := db.Query("SELECT * FROM user")
-	if err != nil {
-		panic(err.Error())
-	}
-	for results.Next() {
-		var user User
-		err = results.Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.Role)
+		results, err := db.Query("SELECT * FROM user")
 		if err != nil {
-			panic(err.Error()) // proper error handling instead of panic in your app
+			panic(err.Error())
 		}
-		person := User{
-			Id: user.Id, Name: user.Name, Email: user.Email, Password: user.Password, Role: user.Role,
+		for results.Next() {
+			var user User
+			err = results.Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.Role)
+			if err != nil {
+				panic(err.Error()) // proper error handling instead of panic in your app
+			}
+			person := User{
+				Id: user.Id, Name: user.Name, Email: user.Email, Password: user.Password, Role: user.Role,
+			}
+			users = append(users, person)
 		}
-		users = append(users, person)
 
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(users)
 	}
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(users)
 }
 
 func main() {
-	http.HandleFunc("/getusers", getUsers)
+	db, err := sql.Open("mysql", os.Getenv("DSN"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	http.HandleFunc("/getusers", getUsers(db))
 
 	port := os.Getenv("PORT")
 
@@ -103,10 +95,4 @@ func main() {
 
 	log.Println("listening and serving")
 
-	// if errors.Is(err, http.ErrServerClosed) {
-	// 	fmt.Printf("server closed\n")
-	// } else if err != nil {
-	// 	fmt.Printf("error starting server: %s\n", err)
-	// 	os.Exit(1)
-	// }
 }
