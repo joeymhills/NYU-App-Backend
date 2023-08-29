@@ -55,7 +55,7 @@ func getUnauthorized(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 
 		users := []User{}
 
-		results, err := db.Query("SELECT id, email, name, role FROM user WHERE role = 'unassigned")
+		results, err := db.Query("SELECT id, email, name, role FROM user WHERE role = 'unassigned'")
 		if err != nil {
 			panic(err.Error())
 		}
@@ -81,7 +81,7 @@ func getUsers(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 
 		users := []User{}
 
-		results, err := db.Query("SELECT id, email, name, role FROM user WHERE role = 'user")
+		results, err := db.Query("SELECT id, email, name, role FROM user WHERE role = 'user'")
 		if err != nil {
 			panic(err.Error())
 		}
