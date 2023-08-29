@@ -70,7 +70,7 @@ func getUsers(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 			}
 			users = append(users, person)
 		}
-		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Origin", "https://nyu-award.vercel.app")
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(users)
 	}
