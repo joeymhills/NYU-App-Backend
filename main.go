@@ -71,6 +71,7 @@ func getUnauthorized(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 			users = append(users, person)
 		}
 
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(users)
 	}
@@ -97,6 +98,7 @@ func getUsers(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 			users = append(users, person)
 		}
 
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(users)
 	}
@@ -122,6 +124,7 @@ func getManagers(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 			users = append(users, person)
 		}
 
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(users)
 	}
@@ -146,7 +149,7 @@ func getAdmins(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 			}
 			users = append(users, person)
 		}
-
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(users)
 	}
