@@ -87,12 +87,12 @@ func getUsers(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		}
 		for results.Next() {
 			var user User
-			err = results.Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.Role)
+			err = results.Scan(&user.Id, &user.Name, &user.Email, &user.Role)
 			if err != nil {
 				panic(err.Error()) // proper error handling instead of panic in your app
 			}
 			person := User{
-				Id: user.Id, Name: user.Name, Email: user.Email, Password: user.Password, Role: user.Role,
+				Id: user.Id, Name: user.Name, Email: user.Email, Role: user.Role,
 			}
 			users = append(users, person)
 		}
@@ -112,12 +112,12 @@ func getManagers(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		}
 		for results.Next() {
 			var user User
-			err = results.Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.Role)
+			err = results.Scan(&user.Id, &user.Name, &user.Email, &user.Role)
 			if err != nil {
 				panic(err.Error()) // proper error handling instead of panic in your app
 			}
 			person := User{
-				Id: user.Id, Name: user.Name, Email: user.Email, Password: user.Password, Role: user.Role,
+				Id: user.Id, Name: user.Name, Email: user.Email, Role: user.Role,
 			}
 			users = append(users, person)
 		}
@@ -137,12 +137,12 @@ func getAdmins(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		}
 		for results.Next() {
 			var user User
-			err = results.Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.Role)
+			err = results.Scan(&user.Id, &user.Name, &user.Email, &user.Role)
 			if err != nil {
 				panic(err.Error()) // proper error handling instead of panic in your app
 			}
 			person := User{
-				Id: user.Id, Name: user.Name, Email: user.Email, Password: user.Password, Role: user.Role,
+				Id: user.Id, Name: user.Name, Email: user.Email, Role: user.Role,
 			}
 			users = append(users, person)
 		}
