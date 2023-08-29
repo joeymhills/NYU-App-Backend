@@ -70,6 +70,8 @@ func getUsers(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 			}
 			users = append(users, person)
 		}
+
+		w.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Accept")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(users)
