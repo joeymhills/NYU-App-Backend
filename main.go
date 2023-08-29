@@ -55,7 +55,7 @@ func getUsers(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 
 		users := []User{}
 
-		results, err := db.Query("SELECT * FROM users")
+		results, err := db.Query("SELECT * FROM user")
 		if err != nil {
 			panic(err.Error())
 		}
