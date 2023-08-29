@@ -44,11 +44,36 @@ type DB struct {
 	*sql.DB
 }
 type User struct {
-	Id       int    `json:"id"`
-	Email    string `json:"email"`
-	Name     string `json:"name"`
-	Password string `json:"password"`
-	Role     string `json:"role"`
+	Id    int    `json:"id"`
+	Email string `json:"email"`
+	Name  string `json:"name"`
+	Role  string `json:"role"`
+}
+
+func getUnauthorized(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		users := []User{}
+
+		results, err := db.Query("SELECT id, email, name, role FROM user WHERE role = 'unassigned'")
+		if err != nil {
+			panic(err.Error())
+		}
+		for results.Next() {
+			var user User
+			err = results.Scan(&user.Id, &user.Name, &user.Email, &user.Role)
+			if err != nil {
+				panic(err.Error()) // proper error handling instead of panic in your app
+			}
+			person := User{
+				Id: user.Id, Name: user.Name, Email: user.Email, Role: user.Role,
+			}
+			users = append(users, person)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(users)
+	}
 }
 
 func getUsers(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
@@ -76,7 +101,56 @@ func getUsers(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(users)
 	}
 }
+func getManagers(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 
+		users := []User{}
+
+		results, err := db.Query("SELECT * FROM user")
+		if err != nil {
+			panic(err.Error())
+		}
+		for results.Next() {
+			var user User
+			err = results.Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.Role)
+			if err != nil {
+				panic(err.Error()) // proper error handling instead of panic in your app
+			}
+			person := User{
+				Id: user.Id, Name: user.Name, Email: user.Email, Password: user.Password, Role: user.Role,
+			}
+			users = append(users, person)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(users)
+	}
+}
+func getAdmins(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		users := []User{}
+
+		results, err := db.Query("SELECT * FROM user")
+		if err != nil {
+			panic(err.Error())
+		}
+		for results.Next() {
+			var user User
+			err = results.Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.Role)
+			if err != nil {
+				panic(err.Error()) // proper error handling instead of panic in your app
+			}
+			person := User{
+				Id: user.Id, Name: user.Name, Email: user.Email, Password: user.Password, Role: user.Role,
+			}
+			users = append(users, person)
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(users)
+	}
+}
 func main() {
 	db, err := sql.Open("mysql", os.Getenv("DSN"))
 	if err != nil {
@@ -84,6 +158,9 @@ func main() {
 	}
 
 	http.HandleFunc("/getusers", getUsers(db))
+	http.HandleFunc("/getunauthorized", getUsers(db))
+	http.HandleFunc("/getmanagers", getUsers(db))
+	http.HandleFunc("/getadmin", getUsers(db))
 
 	port := os.Getenv("PORT")
 
