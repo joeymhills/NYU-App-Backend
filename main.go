@@ -158,10 +158,10 @@ func main() {
 		log.Fatal(err)
 	}
 
+	http.HandleFunc("/getunauthorized", getUnauthorized(db))
 	http.HandleFunc("/getusers", getUsers(db))
-	http.HandleFunc("/getunauthorized", getUsers(db))
-	http.HandleFunc("/getmanagers", getUsers(db))
-	http.HandleFunc("/getadmin", getUsers(db))
+	http.HandleFunc("/getuanagers", getManagers(db))
+	http.HandleFunc("/getadmin", getAdmins(db))
 
 	port := os.Getenv("PORT")
 
