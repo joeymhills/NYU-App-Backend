@@ -55,7 +55,7 @@ func getUsers(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 
 		users := []User{}
 
-		results, err := db.Query("SELECT * FROM user")
+		results, err := db.Query("SELECT id, email, name, role FROM user")
 		if err != nil {
 			panic(err.Error())
 		}
@@ -71,6 +71,7 @@ func getUsers(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 			users = append(users, person)
 		}
 
+		w.Header().Set("Access-Control-Allow-Methods", "GET, PUT, POST")
 		w.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Accept")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Content-Type", "application/json")
