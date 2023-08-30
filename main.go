@@ -40,8 +40,8 @@ type Award struct {
 	Sourceatr      string     `json:"sourceatr"`
 	Wherepubint    string     `json:"wherepubint"`
 	Promotionlim   string     `json:"promotionlim"`
-	EffectiveDate  string     `json:"effectiveDate"`
-	ExpirationDate string     `json:"expirationDate"`
+	EffectiveDate  NullString `json:"effectiveDate"`
+	ExpirationDate NullString `json:"expirationDate"`
 	CreatedAt      string     `json:"createdAt"`
 	Imgurl1        NullString `json:"imgurl1"`
 	Imgurl2        NullString `json:"imgurl2"`
@@ -81,9 +81,9 @@ func searchAwards(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		//sql query where name like %s%
 
 		awards := []Award{}
-		results, err := db.Query("SELECT * FROM accolade")
+		results, err := db.Query("SELECT id, name, ins FROM accolade")
 		if err != nil {
-			log.Println(err)
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			panic(err.Error())
 		}
 		for results.Next() {
@@ -91,7 +91,7 @@ func searchAwards(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 			err = results.Scan(&award.Id, &award.Name, &award.Institution, &award.Outcome, &award.ServiceLine,
 				&award.ExtSource, &award.IntSource, &award.Messaging, &award.Comments, &award.Frequency, &award.NotifDate,
 				&award.Cmcontact, &award.Sourceatr, &award.Wherepubint, &award.Promotionlim, &award.EffectiveDate,
-				&award.ExpirationDate, &award.Imgurl1, &award.Imgurl2, &award.Imgurl3, &award.Imgurl4, &award.Supported, &award.CreatedAt)
+				&award.ExpirationDate, &award.Imgurl1, &award.Supported, &award.CreatedAt)
 			if err != nil {
 				log.Println(err)
 				panic(err.Error()) // proper error handling instead of panic in your apps
