@@ -13,41 +13,41 @@ import (
 
 // DSN=65xjbvp99e06f6krzt0x:pscale_pw_ztGVHxT3MSn3zTpg4741B1a9EYn7NZXiOCbVgJtFzxV@tcp(aws.connect.psdb.cloud)/nyu-db?tls=true&interpolateParams=true
 
-type NullString struct {
-	sql.NullString
-}
+// type NullString struct {
+// 	sql.NullString
+// }
 
-func (ns *NullString) MarshalJSON() ([]byte, error) {
-	if !ns.Valid {
-		return []byte("null"), nil
-	}
-	return json.Marshal(ns.String)
-}
+// func (ns *NullString) MarshalJSON() ([]byte, error) {
+// 	if !ns.Valid {
+// 		return []byte("null"), nil
+// 	}
+// 	return json.Marshal(ns.String)
+// }
 
 type Award struct {
-	Id             string     `json:"id"`
-	Name           string     `json:"name"`
-	Institution    string     `json:"institution"`
-	Outcome        string     `json:"outcome"`
-	ServiceLine    string     `json:"serviceLine"`
-	ExtSource      string     `json:"extSource"`
-	IntSource      string     `json:"intSource"`
-	Messaging      string     `json:"messaging"`
-	Comments       string     `json:"comments"`
-	Frequency      string     `json:"frequency"`
-	NotifDate      string     `json:"notifDate"`
-	Cmcontact      string     `json:"cmcontact"`
-	Sourceatr      string     `json:"sourceatr"`
-	Wherepubint    string     `json:"wherepubint"`
-	Promotionlim   string     `json:"promotionlim"`
-	EffectiveDate  NullString `json:"effectiveDate"`
-	ExpirationDate NullString `json:"expirationDate"`
-	CreatedAt      string     `json:"createdAt"`
-	Imgurl1        NullString `json:"imgurl1"`
-	Imgurl2        NullString `json:"imgurl2"`
-	Imgurl3        NullString `json:"imgurl3"`
-	Imgurl4        NullString `json:"imgurl4"`
-	Supported      bool       `json:"supported"`
+	Id           string `json:"id"`
+	Name         string `json:"name"`
+	Institution  string `json:"institution"`
+	Outcome      string `json:"outcome"`
+	ServiceLine  string `json:"serviceLine"`
+	ExtSource    string `json:"extSource"`
+	IntSource    string `json:"intSource"`
+	Messaging    string `json:"messaging"`
+	Comments     string `json:"comments"`
+	Frequency    string `json:"frequency"`
+	NotifDate    string `json:"notifDate"`
+	Cmcontact    string `json:"cmcontact"`
+	Sourceatr    string `json:"sourceatr"`
+	Wherepubint  string `json:"wherepubint"`
+	Promotionlim string `json:"promotionlim"`
+	// EffectiveDate  NullString `json:"effectiveDate"`
+	// ExpirationDate NullString `json:"expirationDate"`
+	CreatedAt string `json:"createdAt"`
+	// Imgurl1        NullString `json:"imgurl1"`
+	// Imgurl2        NullString `json:"imgurl2"`
+	// Imgurl3        NullString `json:"imgurl3"`
+	// Imgurl4        NullString `json:"imgurl4"`
+	Supported bool `json:"supported"`
 }
 type Employee struct {
 	Name string `json:"name"`
@@ -81,7 +81,7 @@ func searchAwards(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		//sql query where name like %s%
 
 		awards := []Award{}
-		results, err := db.Query("SELECT * FROM accolade")
+		results, err := db.Query("SELECT id, name, institution, outcome, serviceLine, extSource, intSource, messaging, comments, frequency, notifDate, cmcontact, sourceatr, wherepubint, promotionlim, supported, createdAt FROM accolade")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			panic(err.Error())
@@ -90,8 +90,7 @@ func searchAwards(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 			var award Award
 			err = results.Scan(&award.Id, &award.Name, &award.Institution, &award.Outcome, &award.ServiceLine,
 				&award.ExtSource, &award.IntSource, &award.Messaging, &award.Comments, &award.Frequency, &award.NotifDate,
-				&award.Cmcontact, &award.Sourceatr, &award.Wherepubint, &award.Promotionlim, &award.EffectiveDate,
-				&award.ExpirationDate, &award.Imgurl1, &award.Supported, &award.CreatedAt)
+				&award.Cmcontact, &award.Sourceatr, &award.Wherepubint, &award.Supported, &award.CreatedAt)
 			if err != nil {
 				log.Println(err)
 				panic(err.Error()) // proper error handling instead of panic in your apps
@@ -100,8 +99,7 @@ func searchAwards(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 				Id: award.Id, Name: award.Name, Institution: award.Institution, Outcome: award.Outcome, ServiceLine: award.ServiceLine,
 				ExtSource: award.ExtSource, IntSource: award.IntSource, Messaging: award.Messaging, Comments: award.Comments, Frequency: award.Frequency,
 				NotifDate: award.NotifDate, Cmcontact: award.Cmcontact, Sourceatr: award.Sourceatr, Wherepubint: award.Wherepubint, Promotionlim: award.Promotionlim,
-				EffectiveDate: award.EffectiveDate, ExpirationDate: award.ExpirationDate, Imgurl1: award.Imgurl1, Imgurl2: award.Imgurl2, Imgurl3: award.Imgurl3,
-				Imgurl4: award.Imgurl4, Supported: award.Supported, CreatedAt: award.CreatedAt,
+				Supported: award.Supported, CreatedAt: award.CreatedAt,
 			}
 			awards = append(awards, awardStruct)
 		}
