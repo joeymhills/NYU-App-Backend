@@ -55,10 +55,10 @@ type Award struct {
 	EffectiveDate  string     `json:"effectiveDate"`
 	ExpirationDate string     `json:"expirationDate"`
 	CreatedAt      string     `json:"createdAt"`
-	Imgurl1        NullString `json:"imgurl1,omitempty"`
-	Imgurl2        NullString `json:"imgurl2,omitempty"`
-	Imgurl3        NullString `json:"imgurl3,omitempty"`
-	Imgurl4        NullString `json:"imgurl4,omitempty"`
+	Imgurl1        NullString `json:"imgurl1"`
+	Imgurl2        NullString `json:"imgurl2"`
+	Imgurl3        NullString `json:"imgurl3"`
+	Imgurl4        NullString `json:"imgurl4"`
 	Supported      bool       `json:"supported"`
 }
 type Employee struct {
