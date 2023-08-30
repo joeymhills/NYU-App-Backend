@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/spatialcurrent/go-stringify/pkg/stringify"
@@ -13,30 +14,38 @@ import (
 
 // DSN=65xjbvp99e06f6krzt0x:pscale_pw_ztGVHxT3MSn3zTpg4741B1a9EYn7NZXiOCbVgJtFzxV@tcp(aws.connect.psdb.cloud)/nyu-db?tls=true&interpolateParams=true
 
+type NullString sql.NullString
+
+func (s *NullString) UnmarshalJSON(data []byte) error {
+	s.String = strings.Trim(string(data), `"`)
+	s.Valid = true
+	return nil
+}
+
 type Award struct {
-	Id             string         `json:"id"`
-	Name           string         `json:"name"`
-	Institution    string         `json:"institution"`
-	Outcome        string         `json:"outcome"`
-	ServiceLine    string         `json:"serviceLine"`
-	ExtSource      string         `json:"extSource"`
-	IntSource      string         `json:"intSource"`
-	Messaging      string         `json:"messaging"`
-	Comments       string         `json:"comments"`
-	Frequency      string         `json:"frequency"`
-	NotifDate      string         `json:"notifDate"`
-	Cmcontact      string         `json:"cmcontact"`
-	Sourceatr      string         `json:"sourceatr"`
-	Wherepubint    string         `json:"wherepubint"`
-	Promotionlim   string         `json:"promotionlim"`
-	EffectiveDate  string         `json:"effectiveDate"`
-	ExpirationDate string         `json:"expirationDate"`
-	CreatedAt      string         `json:"createdAt"`
-	Imgurl1        sql.NullString `json:"imgurl1"`
-	Imgurl2        sql.NullString `json:"imgurl2"`
-	Imgurl3        sql.NullString `json:"imgurl3"`
-	Imgurl4        sql.NullString `json:"imgurl4"`
-	Supported      bool           `json:"supported"`
+	Id             string     `json:"id"`
+	Name           string     `json:"name"`
+	Institution    string     `json:"institution"`
+	Outcome        string     `json:"outcome"`
+	ServiceLine    string     `json:"serviceLine"`
+	ExtSource      string     `json:"extSource"`
+	IntSource      string     `json:"intSource"`
+	Messaging      string     `json:"messaging"`
+	Comments       string     `json:"comments"`
+	Frequency      string     `json:"frequency"`
+	NotifDate      string     `json:"notifDate"`
+	Cmcontact      string     `json:"cmcontact"`
+	Sourceatr      string     `json:"sourceatr"`
+	Wherepubint    string     `json:"wherepubint"`
+	Promotionlim   string     `json:"promotionlim"`
+	EffectiveDate  string     `json:"effectiveDate"`
+	ExpirationDate string     `json:"expirationDate"`
+	CreatedAt      string     `json:"createdAt"`
+	Imgurl1        NullString `json:"imgurl1"`
+	Imgurl2        NullString `json:"imgurl2"`
+	Imgurl3        NullString `json:"imgurl3"`
+	Imgurl4        NullString `json:"imgurl4"`
+	Supported      bool       `json:"supported"`
 }
 type Employee struct {
 	Name string `json:"name"`
