@@ -94,6 +94,7 @@ func searchAwards(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		awards := []Award{}
 		results, err := db.Query("SELECT * FROM accolade")
 		if err != nil {
+			log.Println(err)
 			panic(err.Error())
 		}
 		for results.Next() {
@@ -103,6 +104,7 @@ func searchAwards(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 				&award.Cmcontact, &award.Sourceatr, &award.Wherepubint, &award.Promotionlim, &award.EffectiveDate,
 				&award.ExpirationDate, &award.Imgurl1, &award.Imgurl2, &award.Imgurl3, &award.Imgurl4, &award.Supported, &award.CreatedAt)
 			if err != nil {
+				log.Println(err)
 				panic(err.Error()) // proper error handling instead of panic in your apps
 			}
 			awardStruct := Award{
