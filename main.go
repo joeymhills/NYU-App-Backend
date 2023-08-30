@@ -14,29 +14,29 @@ import (
 // DSN=65xjbvp99e06f6krzt0x:pscale_pw_ztGVHxT3MSn3zTpg4741B1a9EYn7NZXiOCbVgJtFzxV@tcp(aws.connect.psdb.cloud)/nyu-db?tls=true&interpolateParams=true
 
 type Award struct {
-	Id             string `json:"id"`
-	Name           string `json:"name"`
-	Institution    string `json:"institution"`
-	Outcome        string `json:"outcome"`
-	ServiceLine    string `json:"serviceLine"`
-	ExtSource      string `json:"extSource"`
-	IntSource      string `json:"intSource"`
-	Messaging      string `json:"messaging"`
-	Comments       string `json:"comments"`
-	Frequency      string `json:"frequency"`
-	NotifDate      string `json:"notifDate"`
-	Cmcontact      string `json:"cmcontact"`
-	Sourceatr      string `json:"sourceatr"`
-	Wherepubint    string `json:"wherepubint"`
-	Promotionlim   string `json:"promotionlim"`
-	EffectiveDate  string `json:"effectiveDate"`
-	ExpirationDate string `json:"expirationDate"`
-	CreatedAt      string `json:"createdAt"`
-	Imgurl1        string `json:"imgurl1"`
-	Imgurl2        string `json:"imgurl2"`
-	Imgurl3        string `json:"imgurl3"`
-	Imgurl4        string `json:"imgurl4"`
-	Supported      bool   `json:"supported"`
+	Id             string         `json:"id"`
+	Name           string         `json:"name"`
+	Institution    string         `json:"institution"`
+	Outcome        string         `json:"outcome"`
+	ServiceLine    string         `json:"serviceLine"`
+	ExtSource      string         `json:"extSource"`
+	IntSource      string         `json:"intSource"`
+	Messaging      string         `json:"messaging"`
+	Comments       string         `json:"comments"`
+	Frequency      string         `json:"frequency"`
+	NotifDate      string         `json:"notifDate"`
+	Cmcontact      string         `json:"cmcontact"`
+	Sourceatr      string         `json:"sourceatr"`
+	Wherepubint    string         `json:"wherepubint"`
+	Promotionlim   string         `json:"promotionlim"`
+	EffectiveDate  string         `json:"effectiveDate"`
+	ExpirationDate string         `json:"expirationDate"`
+	CreatedAt      string         `json:"createdAt"`
+	Imgurl1        sql.NullString `json:"imgurl1"`
+	Imgurl2        sql.NullString `json:"imgurl2"`
+	Imgurl3        sql.NullString `json:"imgurl3"`
+	Imgurl4        sql.NullString `json:"imgurl4"`
+	Supported      bool           `json:"supported"`
 }
 type Employee struct {
 	Name string `json:"name"`
