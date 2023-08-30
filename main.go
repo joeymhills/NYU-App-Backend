@@ -13,28 +13,29 @@ import (
 
 // DSN=65xjbvp99e06f6krzt0x:pscale_pw_ztGVHxT3MSn3zTpg4741B1a9EYn7NZXiOCbVgJtFzxV@tcp(aws.connect.psdb.cloud)/nyu-db?tls=true&interpolateParams=true
 
-type Accolade struct {
-	id             string `json:"id"`
-	name           string `json:"name"`
-	institution    string `json:"institution"`
-	outcome        string `json:"outcome"`
-	serviceLine    string `json:"serviceLine"`
-	extSource      string `json:"extSource"`
-	intSource      string `json:"intSource"`
-	messaging      string `json:"messaging"`
-	comments       string `json:"comments"`
-	frequency      string `json:"frequency"`
-	notifDate      string `json:"notifDate"`
-	cmcontact      string `json:"cmcontact"`
-	sourceatr      string `json:"sourceatr"`
-	wherepubint    string `json:"wherepubint"`
-	promotionlim   string `json:"promotionlim"`
-	effectiveDate  string `json:"effectiveDate"`
-	expirationDate string `json:"expirationDate"`
-	imgurl1        string `json:"imgurl1"`
-	imgurl2        string `json:"imgurl2"`
-	imgurl3        string `json:"imgurl3"`
-	imgurl4        string `json:"imgurl4"`
+type Award struct {
+	Id             string `json:"id"`
+	Name           string `json:"name"`
+	Institution    string `json:"institution"`
+	Outcome        string `json:"outcome"`
+	ServiceLine    string `json:"serviceLine"`
+	ExtSource      string `json:"extSource"`
+	IntSource      string `json:"intSource"`
+	Messaging      string `json:"messaging"`
+	Comments       string `json:"comments"`
+	Frequency      string `json:"frequency"`
+	NotifDate      string `json:"notifDate"`
+	Cmcontact      string `json:"cmcontact"`
+	Sourceatr      string `json:"sourceatr"`
+	Wherepubint    string `json:"wherepubint"`
+	Promotionlim   string `json:"promotionlim"`
+	EffectiveDate  string `json:"effectiveDate"`
+	ExpirationDate string `json:"expirationDate"`
+	Imgurl1        string `json:"imgurl1"`
+	Imgurl2        string `json:"imgurl2"`
+	Imgurl3        string `json:"imgurl3"`
+	Imgurl4        string `json:"imgurl4"`
+	Supported      bool   `json:"supported"`
 }
 type Employee struct {
 	Name string `json:"name"`
@@ -50,6 +51,35 @@ type User struct {
 	Role  string `json:"role"`
 }
 
+func searchAwards(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		// awards := []Award{}
+		search := r.Body
+		log.Println(search)
+
+		// results, err := db.Query("SELECT * FROM accolade")
+		// if err != nil {
+		// 	panic(err.Error())
+		// }
+		// for results.Next() {
+		// 	var award Award
+		// 	err = results.Scan(&.Id, &user.Name, &user.Email, &user.Role)
+		// 	if err != nil {
+		// 		panic(err.Error()) // proper error handling instead of panic in your apps
+		// 	}
+		// 	person := User{
+		// 		Id: user.Id, Name: user.Name, Email: user.Email, Role: user.Role,
+		// 	}
+		// 	awards = append(awards, award)
+		// }
+
+		// w.Header().Set("Access-Control-Allow-Headers", "Origin, Authorization, Content-Type, Accept")
+		// w.Header().Set("Access-Control-Allow-Origin", "https://nyu-award.vercel.app")
+		// w.Header().Set("Content-Type", "application/json")
+		// json.NewEncoder(w).Encode(users)
+	}
+}
 func getUsers(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -74,7 +104,7 @@ func getUsers(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		// w.Header().Set("Access-Control-Allow-Methods", "GET, PUT, POST")
 		// meoww
 		w.Header().Set("Access-Control-Allow-Headers", "Origin, Authorization, Content-Type, Accept")
-		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Origin", "https://nyu-award.vercel.app")
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(users)
 	}
@@ -86,6 +116,7 @@ func main() {
 	}
 
 	http.HandleFunc("/getusers", getUsers(db))
+	http.HandleFunc("/search", searchAwards(db))
 
 	port := os.Getenv("PORT")
 
