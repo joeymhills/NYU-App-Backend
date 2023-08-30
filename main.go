@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -56,9 +57,6 @@ type Employee struct {
 type DB struct {
 	*sql.DB
 }
-type SearchBody struct {
-	Search string `json:"search"`
-}
 type User struct {
 	Id    int    `json:"id"`
 	Email string `json:"email"`
@@ -69,14 +67,8 @@ type User struct {
 func searchAwards(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		var s SearchBody
-		err := json.NewDecoder(r.Body).Decode(&s)
-		if err != nil {
-			log.Println("error decoding json")
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		// log.Println(s)
+		search, err := io.ReadAll(r.Body)
+		s := string(search)
 
 		//sql query where name like %s%
 
