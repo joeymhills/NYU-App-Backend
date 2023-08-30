@@ -81,7 +81,7 @@ func searchAwards(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		//sql query where name like %s%
 
 		awards := []Award{}
-		results, err := db.Query("SELECT id, name, ins FROM accolade")
+		results, err := db.Query("SELECT * FROM accolade")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			panic(err.Error())
@@ -136,7 +136,7 @@ func getUsers(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		// w.Header().Set("Access-Control-Allow-Methods", "GET, PUT, POST")
 		// meoww
 		w.Header().Set("Access-Control-Allow-Headers", "Origin, Authorization, Content-Type, Accept")
-		w.Header().Set("Access-Control-Allow-Origin", "https://nyu-award.vercel.app")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(users)
 	}
