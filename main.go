@@ -72,6 +72,7 @@ func searchAwards(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		var s SearchBody
 		err := json.NewDecoder(r.Body).Decode(&s)
 		if err != nil {
+			log.Println("error decoding json")
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
