@@ -74,7 +74,7 @@ func searchAwards(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 
 		awards := []Award{}
 		query := "%" + s + "%"
-		results, err := db.Query("SELECT id, name, institution, outcome, serviceLine, extSource, intSource, messaging, comments, frequency, notifDate, cmcontact, sourceatr, wherepubint, promotionlim, supported, createdAt FROM accolade WHERE name LIKE ", query)
+		results, err := db.Query("SELECT id, name, institution, outcome, serviceLine, extSource, intSource, messaging, comments, frequency, notifDate, cmcontact, sourceatr, wherepubint, promotionlim, supported, createdAt FROM accolade WHERE name LIKE ?", query)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			panic(err.Error())
