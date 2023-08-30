@@ -2,11 +2,12 @@ package main
 
 import (
 	"database/sql"
+	"database/sql/driver"
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 	"os"
-	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/spatialcurrent/go-stringify/pkg/stringify"
@@ -14,12 +15,25 @@ import (
 
 // DSN=65xjbvp99e06f6krzt0x:pscale_pw_ztGVHxT3MSn3zTpg4741B1a9EYn7NZXiOCbVgJtFzxV@tcp(aws.connect.psdb.cloud)/nyu-db?tls=true&interpolateParams=true
 
-type NullString sql.NullString
+type NullString string
 
-func (s *NullString) UnmarshalJSON(data []byte) error {
-	s.String = strings.Trim(string(data), `"`)
-	s.Valid = true
+func (s *NullString) Scan(value interface{}) error {
+	if value == nil {
+		*s = ""
+		return nil
+	}
+	strVal, ok := value.(string)
+	if !ok {
+		return errors.New("Column is not a string")
+	}
+	*s = NullString(strVal)
 	return nil
+}
+func (s NullString) Value() (driver.Value, error) {
+	if len(s) == 0 { // if nil or empty string
+		return nil, nil
+	}
+	return string(s), nil
 }
 
 type Award struct {
