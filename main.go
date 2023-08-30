@@ -44,6 +44,9 @@ type Employee struct {
 type DB struct {
 	*sql.DB
 }
+type SearchBody struct {
+	Search string `json:"search"`
+}
 type User struct {
 	Id    int    `json:"id"`
 	Email string `json:"email"`
@@ -54,30 +57,44 @@ type User struct {
 func searchAwards(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		// awards := []Award{}
-		search := r.Body
-		log.Println(search)
+		var s SearchBody
+		err := json.NewDecoder(r.Body).Decode(&s)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		// log.Println(s)
 
-		// results, err := db.Query("SELECT * FROM accolade")
-		// if err != nil {
-		// 	panic(err.Error())
-		// }
-		// for results.Next() {
-		// 	var award Award
-		// 	err = results.Scan(&.Id, &user.Name, &user.Email, &user.Role)
-		// 	if err != nil {
-		// 		panic(err.Error()) // proper error handling instead of panic in your apps
-		// 	}
-		// 	person := User{
-		// 		Id: user.Id, Name: user.Name, Email: user.Email, Role: user.Role,
-		// 	}
-		// 	awards = append(awards, award)
-		// }
+		//sql query where name like %s%
 
-		// w.Header().Set("Access-Control-Allow-Headers", "Origin, Authorization, Content-Type, Accept")
-		// w.Header().Set("Access-Control-Allow-Origin", "https://nyu-award.vercel.app")
-		// w.Header().Set("Content-Type", "application/json")
-		// json.NewEncoder(w).Encode(users)
+		awards := []Award{}
+		results, err := db.Query("SELECT * FROM accolade")
+		if err != nil {
+			panic(err.Error())
+		}
+		for results.Next() {
+			var award Award
+			err = results.Scan(&award.Id, &award.Name, &award.Institution, &award.Outcome, &award.ServiceLine,
+				&award.ExtSource, &award.IntSource, &award.Messaging, &award.Comments, &award.Frequency, &award.NotifDate,
+				&award.Cmcontact, &award.Sourceatr, &award.Wherepubint, &award.Promotionlim, &award.EffectiveDate,
+				&award.ExpirationDate, &award.Imgurl1, &award.Imgurl2, &award.Imgurl3, &award.Imgurl4, &award.Supported)
+			if err != nil {
+				panic(err.Error()) // proper error handling instead of panic in your apps
+			}
+			awardStruct := Award{
+				Id: award.Id, Name: award.Name, Institution: award.Institution, Outcome: award.Outcome, ServiceLine: award.ServiceLine,
+				ExtSource: award.ExtSource, IntSource: award.IntSource, Messaging: award.Messaging, Comments: award.Comments, Frequency: award.Frequency,
+				NotifDate: award.NotifDate, Cmcontact: award.Cmcontact, Sourceatr: award.Sourceatr, Wherepubint: award.Wherepubint, Promotionlim: award.Promotionlim,
+				EffectiveDate: award.EffectiveDate, ExpirationDate: award.ExpirationDate, Imgurl1: award.Imgurl1, Imgurl2: award.Imgurl2, Imgurl3: award.Imgurl3,
+				Imgurl4: award.Imgurl4, Supported: award.Supported,
+			}
+			awards = append(awards, awardStruct)
+		}
+
+		w.Header().Set("Access-Control-Allow-Headers", "Origin, Authorization, Content-Type, Accept")
+		w.Header().Set("Access-Control-Allow-Origin", "https://nyu-award.vercel.app")
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(awards)
 	}
 }
 func getUsers(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
