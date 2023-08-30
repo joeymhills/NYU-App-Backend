@@ -31,6 +31,7 @@ type Award struct {
 	Promotionlim   string `json:"promotionlim"`
 	EffectiveDate  string `json:"effectiveDate"`
 	ExpirationDate string `json:"expirationDate"`
+	CreatedAt      string `json:"createdAt"`
 	Imgurl1        string `json:"imgurl1"`
 	Imgurl2        string `json:"imgurl2"`
 	Imgurl3        string `json:"imgurl3"`
@@ -77,7 +78,7 @@ func searchAwards(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 			err = results.Scan(&award.Id, &award.Name, &award.Institution, &award.Outcome, &award.ServiceLine,
 				&award.ExtSource, &award.IntSource, &award.Messaging, &award.Comments, &award.Frequency, &award.NotifDate,
 				&award.Cmcontact, &award.Sourceatr, &award.Wherepubint, &award.Promotionlim, &award.EffectiveDate,
-				&award.ExpirationDate, &award.Imgurl1, &award.Imgurl2, &award.Imgurl3, &award.Imgurl4, &award.Supported)
+				&award.ExpirationDate, &award.Imgurl1, &award.Imgurl2, &award.Imgurl3, &award.Imgurl4, &award.Supported, &award.CreatedAt)
 			if err != nil {
 				panic(err.Error()) // proper error handling instead of panic in your apps
 			}
@@ -86,7 +87,7 @@ func searchAwards(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 				ExtSource: award.ExtSource, IntSource: award.IntSource, Messaging: award.Messaging, Comments: award.Comments, Frequency: award.Frequency,
 				NotifDate: award.NotifDate, Cmcontact: award.Cmcontact, Sourceatr: award.Sourceatr, Wherepubint: award.Wherepubint, Promotionlim: award.Promotionlim,
 				EffectiveDate: award.EffectiveDate, ExpirationDate: award.ExpirationDate, Imgurl1: award.Imgurl1, Imgurl2: award.Imgurl2, Imgurl3: award.Imgurl3,
-				Imgurl4: award.Imgurl4, Supported: award.Supported,
+				Imgurl4: award.Imgurl4, Supported: award.Supported, CreatedAt: award.CreatedAt,
 			}
 			awards = append(awards, awardStruct)
 		}
