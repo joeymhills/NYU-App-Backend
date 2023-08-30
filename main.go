@@ -73,7 +73,7 @@ func searchAwards(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		//sql query where name like %s%
 
 		awards := []Award{}
-		query := "SELECT id, name, institution, outcome, serviceLine, extSource, intSource, messaging, comments, frequency, notifDate, cmcontact, sourceatr, wherepubint, promotionlim, supported, createdAt FROM accolade WHERE name LIKE %?"
+		query := "SELECT id, name, institution, outcome, serviceLine, extSource, intSource, messaging, comments, frequency, notifDate, cmcontact, sourceatr, wherepubint, promotionlim, supported, createdAt FROM accolade WHERE name LIKE ?"
 		results, err := db.Query(query, s+".%")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
