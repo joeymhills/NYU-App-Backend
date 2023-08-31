@@ -83,8 +83,8 @@ func searchAwards(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 			var award Award
 			err = results.Scan(&award.Id, &award.Name, &award.Institution, &award.Outcome, &award.ServiceLine,
 				&award.ExtSource, &award.IntSource, &award.Messaging, &award.Comments, &award.Frequency, &award.NotifDate,
-				&award.Cmcontact, &award.Sourceatr, &award.Promotionlim, &award.Wherepubint, &award.Supported, &award.CreatedAt,
-				&award.EffectiveDate, &award.ExpirationDate, &award.Imgurl1, &award.Imgurl2, &award.Imgurl3, &award.Imgurl4)
+				&award.Cmcontact, &award.Sourceatr, &award.Wherepubint, &award.Promotionlim, &award.ExpirationDate,
+				&award.EffectiveDate, &award.Imgurl1, &award.Imgurl2, &award.Imgurl3, &award.Imgurl4, &award.Supported, &award.CreatedAt)
 			if err != nil {
 				log.Println(err)
 				panic(err.Error()) // proper error handling instead of panic in your apps
