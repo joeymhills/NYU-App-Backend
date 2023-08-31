@@ -100,7 +100,7 @@ func searchAwards(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		w.Header().Set("Access-Control-Allow-Headers", "Origin, Authorization, Content-Type, Accept")
-		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Origin", "https://nyu-award.vercel.app/")
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(awards)
 	}
