@@ -50,6 +50,32 @@ type Award struct {
 	Imgurl4        string `json:"imgurl4"`
 	Supported      bool   `json:"supported"`
 }
+
+type BackupAward struct {
+	Id             string `json:"id"`
+	Name           string `json:"name"`
+	Institution    string `json:"institution"`
+	Outcome        string `json:"outcome"`
+	ServiceLine    string `json:"serviceLine"`
+	ExtSource      string `json:"extSource"`
+	IntSource      string `json:"intSource"`
+	Messaging      string `json:"messaging"`
+	Comments       string `json:"comments"`
+	Frequency      string `json:"frequency"`
+	NotifDate      string `json:"notifDate"`
+	Cmcontact      string `json:"cmcontact"`
+	Sourceatr      string `json:"sourceatr"`
+	Wherepubint    string `json:"wherepubint"`
+	Promotionlim   string `json:"promotionlim"`
+	EffectiveDate  string `json:"effectiveDate"`
+	ExpirationDate string `json:"expirationDate"`
+	DeletedAt      string `json:"deletedAt"`
+	Imgurl1        string `json:"imgurl1"`
+	Imgurl2        string `json:"imgurl2"`
+	Imgurl3        string `json:"imgurl3"`
+	Imgurl4        string `json:"imgurl4"`
+	Supported      bool   `json:"supported"`
+}
 type Employee struct {
 	Name string `json:"name"`
 	ID   int    `json:"id"`
@@ -134,6 +160,44 @@ func getUsers(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(users)
 	}
 }
+
+// function that gets all deleted awards from accoladeBackup table
+func getDeleted(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		awards := []BackupAward{}
+		results, err := db.Query("SELECT id, name, institution, outcome, serviceLine, extSource, intSource, messaging, comments, frequency, notifDate, cmcontact, sourceatr, wherepubint, promotionlim, IFNULL(expirationDate,''), IFNULL(effectiveDate,''), IFNULL(imgurl1,''),IFNULL(imgurl2,''),IFNULL(imgurl3,''), IFNULL(imgurl4,''), supported, deletedAt FROM backupaccolade")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			panic(err.Error())
+		}
+		for results.Next() {
+			var award BackupAward
+			err = results.Scan(&award.Id, &award.Name, &award.Institution, &award.Outcome, &award.ServiceLine,
+				&award.ExtSource, &award.IntSource, &award.Messaging, &award.Comments, &award.Frequency, &award.NotifDate,
+				&award.Cmcontact, &award.Sourceatr, &award.Wherepubint, &award.Promotionlim, &award.ExpirationDate,
+				&award.EffectiveDate, &award.Imgurl1, &award.Imgurl2, &award.Imgurl3, &award.Imgurl4, &award.Supported, &award.DeletedAt)
+			if err != nil {
+				log.Println(err)
+				panic(err.Error()) // proper error handling instead of panic in your apps
+			}
+			awardStruct := BackupAward{
+				Id: award.Id, Name: award.Name, Institution: award.Institution, Outcome: award.Outcome, ServiceLine: award.ServiceLine,
+				ExtSource: award.ExtSource, IntSource: award.IntSource, Messaging: award.Messaging, Comments: award.Comments, Frequency: award.Frequency,
+				NotifDate: award.NotifDate, Cmcontact: award.Cmcontact, Sourceatr: award.Sourceatr, Wherepubint: award.Wherepubint, Promotionlim: award.Promotionlim,
+				Supported: award.Supported, DeletedAt: award.DeletedAt, EffectiveDate: award.EffectiveDate, ExpirationDate: award.ExpirationDate,
+				Imgurl1: award.Imgurl1, Imgurl2: award.Imgurl2, Imgurl3: award.Imgurl3, Imgurl4: award.Imgurl4,
+			}
+			awards = append(awards, awardStruct)
+		}
+
+		w.Header().Set("Access-Control-Allow-Headers", "Origin, Authorization, Content-Type, Accept")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(awards)
+	}
+}
+
 func main() {
 	db, err := sql.Open("mysql", os.Getenv("DSN"))
 	if err != nil {
@@ -141,6 +205,7 @@ func main() {
 	}
 
 	http.HandleFunc("/getusers", getUsers(db))
+	http.HandleFunc("/getdeleted", getDeleted(db))
 	http.HandleFunc("/search", searchAwards(db))
 
 	port := os.Getenv("PORT")
