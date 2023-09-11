@@ -153,7 +153,7 @@ func getUsers(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// w.Header().Set("Access-Control-Allow-Methods", "GET, PUT, POST")
-		// meoww
+
 		w.Header().Set("Access-Control-Allow-Headers", "Origin, Authorization, Content-Type, Accept")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Content-Type", "application/json")
@@ -166,7 +166,7 @@ func getDeleted(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		awards := []BackupAward{}
-		results, err := db.Query("SELECT id, name, institution, outcome, serviceLine, extSource, intSource, messaging, comments, frequency, notifDate, cmcontact, sourceatr, wherepubint, promotionlim, IFNULL(expirationDate,''), IFNULL(effectiveDate,''), IFNULL(imgurl1,''),IFNULL(imgurl2,''),IFNULL(imgurl3,''), IFNULL(imgurl4,''), supported, deletedAt FROM backupaccolade")
+		results, err := db.Query("SELECT id, name, institution, outcome, serviceLine, extSource, intSource, messaging, comments, frequency, notifDate, cmcontact, sourceatr, wherepubint, promotionlim, IFNULL(expirationDate,''), IFNULL(effectiveDate,''), IFNULL(imgurl1,''),IFNULL(imgurl2,''),IFNULL(imgurl3,''), IFNULL(imgurl4,''), supported, deletedAt FROM accoladeBackup")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			panic(err.Error())
