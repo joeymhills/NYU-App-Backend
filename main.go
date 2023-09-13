@@ -125,6 +125,47 @@ func recentAwards(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(awards)
 	}
 }
+
+func findAward(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		query, err := io.ReadAll(r.Body)
+        if err != nil {
+            panic(err)
+        }
+		awards := []Award{}
+		results, err := db.Query("SELECT id, name, institution, outcome, serviceLine, extSource, intSource, messaging, comments, frequency, notifDate, cmcontact, sourceatr, wherepubint, promotionlim, IFNULL(expirationDate,''), IFNULL(effectiveDate,''), IFNULL(imgurl1,''),IFNULL(imgurl2,''),IFNULL(imgurl3,''), IFNULL(imgurl4,''), supported, createdAt FROM accolade WHERE id=", query)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			panic(err.Error())
+		}
+		for results.Next() {
+			var award Award
+			err = results.Scan(&award.Id, &award.Name, &award.Institution, &award.Outcome, &award.ServiceLine,
+				&award.ExtSource, &award.IntSource, &award.Messaging, &award.Comments, &award.Frequency, &award.NotifDate,
+				&award.Cmcontact, &award.Sourceatr, &award.Wherepubint, &award.Promotionlim, &award.ExpirationDate,
+				&award.EffectiveDate, &award.Imgurl1, &award.Imgurl2, &award.Imgurl3, &award.Imgurl4, &award.Supported, &award.CreatedAt)
+			if err != nil {
+				log.Println(err)
+				panic(err.Error()) // proper error handling instead of panic in your apps
+			}
+			awardStruct := Award{
+				Id: award.Id, Name: award.Name, Institution: award.Institution, Outcome: award.Outcome, ServiceLine: award.ServiceLine,
+				ExtSource: award.ExtSource, IntSource: award.IntSource, Messaging: award.Messaging, Comments: award.Comments, Frequency: award.Frequency,
+				NotifDate: award.NotifDate, Cmcontact: award.Cmcontact, Sourceatr: award.Sourceatr, Wherepubint: award.Wherepubint, Promotionlim: award.Promotionlim,
+				Supported: award.Supported, CreatedAt: award.CreatedAt, EffectiveDate: award.EffectiveDate, ExpirationDate: award.ExpirationDate,
+				Imgurl1: award.Imgurl1, Imgurl2: award.Imgurl2, Imgurl3: award.Imgurl3, Imgurl4: award.Imgurl4,
+			}
+			awards = append(awards, awardStruct)
+		}
+
+		w.Header().Set("Access-Control-Allow-Headers", "Origin, Authorization, Content-Type, Accept")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(awards)
+	}
+}
+
 func searchAwards(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -243,6 +284,7 @@ func main() {
 	http.HandleFunc("/getdeleted", getDeleted(db))
 	http.HandleFunc("/search", searchAwards(db))
 	http.HandleFunc("/recentawards", recentAwards(db))
+	http.HandleFunc("/findaward", findAward(db))
 	port := os.Getenv("PORT")
 
 	if port == "" {
