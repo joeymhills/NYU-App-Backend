@@ -24,6 +24,7 @@ import (
 // 	}
 // 	return json.Marshal(ns.String)
 // }
+//git practice
 
 type Award struct {
 	Id             string `json:"id"`
