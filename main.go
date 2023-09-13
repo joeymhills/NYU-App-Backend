@@ -12,7 +12,6 @@ import (
 	_ "github.com/spatialcurrent/go-stringify/pkg/stringify"
 )
 
-// DSN=65xjbvp99e06f6krzt0x:pscale_pw_ztGVHxT3MSn3zTpg4741B1a9EYn7NZXiOCbVgJtFzxV@tcp(aws.connect.psdb.cloud)/nyu-db?tls=true&interpolateParams=true
 
 // type NullString struct {
 // 	sql.NullString
@@ -129,13 +128,17 @@ func recentAwards(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 func findAward(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		query, err := io.ReadAll(r.Body)
+		request, err := io.ReadAll(r.Body)
         if err != nil {
             log.Fatal("error reading body")
         }
+        query := string(request)
+        log.Println(query)
+
 		awards := []Award{}
-		results, err := db.Query("SELECT id, name, institution, outcome, serviceLine, extSource, intSource, messaging, comments, frequency, notifDate, cmcontact, sourceatr, wherepubint, promotionlim, IFNULL(expirationDate,''), IFNULL(effectiveDate,''), IFNULL(imgurl1,''),IFNULL(imgurl2,''),IFNULL(imgurl3,''), IFNULL(imgurl4,''), supported, createdAt FROM accolade WHERE id=", query)
+		results, err := db.Query("SELECT id, name, institution, outcome, serviceLine, extSource, intSource, messaging, comments, frequency, notifDate, cmcontact, sourceatr, wherepubint, promotionlim, IFNULL(expirationDate,''), IFNULL(effectiveDate,''), IFNULL(imgurl1,''),IFNULL(imgurl2,''),IFNULL(imgurl3,''), IFNULL(imgurl4,''), supported, createdAt FROM accolade WHERE id = ?", query)
 		if err != nil {
+            log.Println("error in sql query")
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			panic(err.Error())
 		}
@@ -175,9 +178,9 @@ func searchAwards(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		//sql query where name like %s%
 
 		awards := []Award{}
-		query := "%" + s + "%"
-		results, err := db.Query("SELECT id, name, institution, outcome, serviceLine, extSource, intSource, messaging, comments, frequency, notifDate, cmcontact, sourceatr, wherepubint, promotionlim, IFNULL(expirationDate,''), IFNULL(effectiveDate,''), IFNULL(imgurl1,''),IFNULL(imgurl2,''),IFNULL(imgurl3,''), IFNULL(imgurl4,''), supported, createdAt FROM accolade WHERE name LIKE ?", query)
-		if err != nil {
+        query := "%" + s + "%"
+        results, err := db.Query("SELECT id, name, institution, outcome, serviceLine, extSource, intSource, messaging, comments, frequency, notifDate, cmcontact, sourceatr, wherepubint, promotionlim, IFNULL(expirationDate,''), IFNULL(effectiveDate,''), IFNULL(imgurl1,''),IFNULL(imgurl2,''),IFNULL(imgurl3,''), IFNULL(imgurl4,''), supported, createdAt FROM accolade WHERE name LIKE ?", query)
+        if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			panic(err.Error())
 		}
@@ -275,10 +278,13 @@ func getDeleted(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+
+    os.Setenv("DSN", "5b23vevmff7jcplemgzg:pscale_pw_Q1DJA8Eo6t7bXY9A1V1KIdzuZZObq7JM0ILaBJcCSSu@tcp(aws.connect.psdb.cloud)/nyu-db?tls=true")
 	db, err := sql.Open("mysql", os.Getenv("DSN"))
 	if err != nil {
 		log.Fatal(err)
 	}
+    log.Println("DB connected and ready to serve🫡 ")
 
 	http.HandleFunc("/getusers", getUsers(db))
 	http.HandleFunc("/getdeleted", getDeleted(db))
