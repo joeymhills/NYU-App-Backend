@@ -279,7 +279,6 @@ func getDeleted(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 
-    os.Setenv("DSN", "5b23vevmff7jcplemgzg:pscale_pw_Q1DJA8Eo6t7bXY9A1V1KIdzuZZObq7JM0ILaBJcCSSu@tcp(aws.connect.psdb.cloud)/nyu-db?tls=true")
 	db, err := sql.Open("mysql", os.Getenv("DSN"))
 	if err != nil {
 		log.Fatal(err)
