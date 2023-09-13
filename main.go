@@ -24,7 +24,7 @@ import (
 // 	}
 // 	return json.Marshal(ns.String)
 // }
-//git practice
+//git practice1
 
 type Award struct {
 	Id             string `json:"id"`
@@ -255,3 +255,4 @@ func main() {
 	log.Println("listening and serving")
 
 }
+//more git practice
