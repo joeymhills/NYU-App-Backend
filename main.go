@@ -88,6 +88,9 @@ type User struct {
 	Name  string `json:"name"`
 	Role  string `json:"role"`
 }
+type FindId struct {
+	Id    string    `json:"id"`
+}
 
 func recentAwards(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -127,12 +130,22 @@ func recentAwards(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 
 func findAward(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+        
 
 		request, err := io.ReadAll(r.Body)
+
         if err != nil {
-            log.Fatal("error reading body")
+            log.Fatal(err)
         }
-        query := string(request)
+// unmarshal the request into findId struct
+        var findId FindId 
+        
+        err = json.Unmarshal(request, &findId)
+        if err != nil {
+            log.Fatal(err)
+        }
+        log.Println(findId.Id)
+        query := findId.Id 
         log.Println(query)
 
 		awards := []Award{}
@@ -149,7 +162,6 @@ func findAward(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 				&award.Cmcontact, &award.Sourceatr, &award.Wherepubint, &award.Promotionlim, &award.ExpirationDate,
 				&award.EffectiveDate, &award.Imgurl1, &award.Imgurl2, &award.Imgurl3, &award.Imgurl4, &award.Supported, &award.CreatedAt)
 			if err != nil {
-				log.Println(err)
 				panic(err.Error()) // proper error handling instead of panic in your apps
 			}
 			awardStruct := Award{
