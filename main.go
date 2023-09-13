@@ -25,8 +25,6 @@ import (
 // 	return json.Marshal(ns.String)
 // }
 
-// git test
-
 type Award struct {
 	Id             string `json:"id"`
 	Name           string `json:"name"`
