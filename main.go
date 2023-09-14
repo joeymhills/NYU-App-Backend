@@ -118,29 +118,16 @@ func recentAwards(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 
 func findAward(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-        
 
-		request, err := io.ReadAll(r.Body)
-        log.Println("unparsed body is: ", request)
-        if err != nil {
-            panic(err)
-        }
+		search, err := io.ReadAll(r.Body)
+		s := string(search)
 
-        // unmarshal the request into findId struct
-        var findId FindId 
-        
-        err = json.Unmarshal(request, &findId)
-        if err != nil {
-            panic(err)
-        }
-        log.Println("parsed body is: ", findId.Id)
-        query := findId.Id 
-        log.Println("query variable is: ", query)
+		//sql query where name like %s%
 
 		awards := []Award{}
-		results, err := db.Query("SELECT id, name, institution, outcome, serviceLine, extSource, intSource, messaging, comments, frequency, notifDate, cmcontact, sourceatr, wherepubint, promotionlim, IFNULL(expirationDate,''), IFNULL(effectiveDate,''), IFNULL(imgurl1,''),IFNULL(imgurl2,''),IFNULL(imgurl3,''), IFNULL(imgurl4,''), supported, createdAt FROM accolade WHERE id = ?", query)
-		if err != nil {
-            log.Println("error in sql query")
+        query := s
+        results, err := db.Query("SELECT id, name, institution, outcome, serviceLine, extSource, intSource, messaging, comments, frequency, notifDate, cmcontact, sourceatr, wherepubint, promotionlim, IFNULL(expirationDate,''), IFNULL(effectiveDate,''), IFNULL(imgurl1,''),IFNULL(imgurl2,''),IFNULL(imgurl3,''), IFNULL(imgurl4,''), supported, createdAt FROM accolade WHERE id = ?", query)
+        if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			panic(err.Error())
 		}
@@ -151,6 +138,7 @@ func findAward(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 				&award.Cmcontact, &award.Sourceatr, &award.Wherepubint, &award.Promotionlim, &award.ExpirationDate,
 				&award.EffectiveDate, &award.Imgurl1, &award.Imgurl2, &award.Imgurl3, &award.Imgurl4, &award.Supported, &award.CreatedAt)
 			if err != nil {
+				log.Println(err)
 				panic(err.Error()) // proper error handling instead of panic in your apps
 			}
 			awardStruct := Award{
@@ -286,7 +274,7 @@ func main() {
 	}
     log.Println("DB connected and ready to serve🫡🫡🫡🫡🫡 ")
 
-	http.HandleFunc("/findaward", findAward(db))
+	http.HandleFunc("/find", findAward(db))
 	http.HandleFunc("/getusers", getUsers(db))
 	http.HandleFunc("/getdeleted", getDeleted(db))
 	http.HandleFunc("/search", searchAwards(db))
