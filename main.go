@@ -121,6 +121,7 @@ func findAward(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 
 		search, err := io.ReadAll(r.Body)
 		s := string(search)
+        log.Println(s)
 
 		//sql query where name like %s%
 
