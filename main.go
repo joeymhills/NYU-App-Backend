@@ -12,18 +12,6 @@ import (
 	_ "github.com/spatialcurrent/go-stringify/pkg/stringify"
 )
 
-
-// type NullString struct {
-// 	sql.NullString
-// }
-
-// func (ns *NullString) MarshalJSON() ([]byte, error) {
-// 	if !ns.Valid {
-// 		return []byte("null"), nil
-// 	}
-// 	return json.Marshal(ns.String)
-// }
-
 type Award struct {
 	Id             string `json:"id"`
 	Name           string `json:"name"`
@@ -296,13 +284,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-    log.Println("DB connected and ready to serve🫡 ")
+    log.Println("DB connected and ready to serve🫡🫡🫡🫡🫡 ")
 
+	http.HandleFunc("/findaward", findAward(db))
 	http.HandleFunc("/getusers", getUsers(db))
 	http.HandleFunc("/getdeleted", getDeleted(db))
 	http.HandleFunc("/search", searchAwards(db))
 	http.HandleFunc("/recentawards", recentAwards(db))
-	http.HandleFunc("/findaward", findAward(db))
 	
     port := os.Getenv("PORT")
 	if port == "" {
