@@ -142,7 +142,7 @@ func findAward(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
         
         err = json.Unmarshal(request, &findId)
         if err != nil {
-            log.Fatal(err)
+            panic(err)
         }
         log.Println(findId.Id)
         query := findId.Id 
