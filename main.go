@@ -127,13 +127,10 @@ func findAward(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
         if len(s) > 0 && s[len(s)-1] == '"' {
             s = s[:len(s)-1]
         }
+        
         log.Println(s)
 
-		//sql query where name like %s%
-
-		awards := []Award{}
-        query := s
-        results, err := db.Query("SELECT id, name, institution, outcome, serviceLine, extSource, intSource, messaging, comments, frequency, notifDate, cmcontact, sourceatr, wherepubint, promotionlim, IFNULL(expirationDate,''), IFNULL(effectiveDate,''), IFNULL(imgurl1,''),IFNULL(imgurl2,''),IFNULL(imgurl3,''), IFNULL(imgurl4,''), supported, createdAt FROM accolade WHERE id = ?", query)
+        results, err := db.Query("SELECT id, name, institution, outcome, serviceLine, extSource, intSource, messaging, comments, frequency, notifDate, cmcontact, sourceatr, wherepubint, promotionlim, IFNULL(expirationDate,''), IFNULL(effectiveDate,''), IFNULL(imgurl1,''),IFNULL(imgurl2,''),IFNULL(imgurl3,''), IFNULL(imgurl4,''), supported, createdAt FROM accolade WHERE id = ?", s)
         if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			panic(err.Error())
