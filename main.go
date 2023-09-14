@@ -133,20 +133,21 @@ func findAward(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
         
 
 		request, err := io.ReadAll(r.Body)
-
+        log.Println("unparsed body is: ", request)
         if err != nil {
-            log.Fatal(err)
+            panic(err)
         }
-// unmarshal the request into findId struct
+
+        // unmarshal the request into findId struct
         var findId FindId 
         
         err = json.Unmarshal(request, &findId)
         if err != nil {
             panic(err)
         }
-        log.Println(findId.Id)
+        log.Println("parsed body is: ", findId.Id)
         query := findId.Id 
-        log.Println(query)
+        log.Println("query variable is: ", query)
 
 		awards := []Award{}
 		results, err := db.Query("SELECT id, name, institution, outcome, serviceLine, extSource, intSource, messaging, comments, frequency, notifDate, cmcontact, sourceatr, wherepubint, promotionlim, IFNULL(expirationDate,''), IFNULL(effectiveDate,''), IFNULL(imgurl1,''),IFNULL(imgurl2,''),IFNULL(imgurl3,''), IFNULL(imgurl4,''), supported, createdAt FROM accolade WHERE id = ?", query)
@@ -290,7 +291,7 @@ func getDeleted(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-
+    
 	db, err := sql.Open("mysql", os.Getenv("DSN"))
 	if err != nil {
 		log.Fatal(err)
@@ -302,8 +303,8 @@ func main() {
 	http.HandleFunc("/search", searchAwards(db))
 	http.HandleFunc("/recentawards", recentAwards(db))
 	http.HandleFunc("/findaward", findAward(db))
-	port := os.Getenv("PORT")
-
+	
+    port := os.Getenv("PORT")
 	if port == "" {
 		port = "3333"
 	}
