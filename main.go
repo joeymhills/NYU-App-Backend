@@ -79,6 +79,14 @@ type User struct {
 type FindId struct {
 	Id    string    `json:"id"`
 }
+func hello(w http.ResponseWriter, r *http.Request) {
+    const response = "Hello World"
+    w.Write([]byte(response))
+    w.Header().Set("Access-Control-Allow-Headers", "Origin, Authorization, Content-Type, Accept")
+    w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Content-Type", "application/json")
+}
+
 
 func recentAwards(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -123,22 +131,25 @@ func findAward(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
         if err != nil {
             panic(err)
         }
+        s := string(search)
 
-		s := string(search)
+    //checks to see if s is in quotes, if so, removes them
+
         if len(s) > 0 && s[0] == '"' {
             s = s[1:]
         }
         if len(s) > 0 && s[len(s)-1] == '"' {
             s = s[:len(s)-1]
         }
-        log.Println(s)
 
 		award := Award{}
         row := db.QueryRow("SELECT id, name, institution, outcome, serviceLine, extSource, intSource, messaging, comments, frequency, notifDate, cmcontact, sourceatr, wherepubint, promotionlim, IFNULL(expirationDate,''), IFNULL(effectiveDate,''), IFNULL(imgurl1,''),IFNULL(imgurl2,''),IFNULL(imgurl3,''), IFNULL(imgurl4,''), supported, createdAt FROM accolade WHERE id=?", s)
         switch err := row.Scan(&award.Id, &award.Name, &award.Institution, &award.Outcome, &award.ServiceLine,
 				&award.ExtSource, &award.IntSource, &award.Messaging, &award.Comments, &award.Frequency, &award.NotifDate,
 				&award.Cmcontact, &award.Sourceatr, &award.Wherepubint, &award.Promotionlim, &award.ExpirationDate,
-				&award.EffectiveDate, &award.Imgurl1, &award.Imgurl2, &award.Imgurl3, &award.Imgurl4, &award.Supported, &award.CreatedAt); err {
+				&award.EffectiveDate, &award.Imgurl1, &award.Imgurl2, &award.Imgurl3, &award.Imgurl4, &award.Supported, &award.CreatedAt);
+
+        err {
         case sql.ErrNoRows:
             log.Println("No rows were returned!")
         case nil:
@@ -275,6 +286,7 @@ func main() {
 	http.HandleFunc("/getdeleted", getDeleted(db))
 	http.HandleFunc("/search", searchAwards(db))
 	http.HandleFunc("/recentawards", recentAwards(db))
+	http.HandleFunc("/hello", hello(db))
 	
     port := os.Getenv("PORT")
 	if port == "" {
