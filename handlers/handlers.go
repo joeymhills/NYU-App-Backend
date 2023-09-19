@@ -146,6 +146,9 @@ func FindAward(db *sql.DB, c *cache.Cache) func(w http.ResponseWriter, r *http.R
         //checks go-cache first
         cacheResult, found := c.Get(s)
         if found {
+            w.Header().Set("Access-Control-Allow-Headers", "Origin, Authorization, Content-Type, Accept")
+            w.Header().Set("Access-Control-Allow-Origin", "*")
+            w.Header().Set("Content-Type", "application/json")
             json.NewEncoder(w).Encode(cacheResult)
             log.Println("cache hit!", cacheResult)
         }
@@ -168,12 +171,12 @@ func FindAward(db *sql.DB, c *cache.Cache) func(w http.ResponseWriter, r *http.R
                 panic(err)
             }
 
+            //Caches result for for future use 
+            log.Println("log for search:", s,"award result",  award)
+
             w.Header().Set("Access-Control-Allow-Headers", "Origin, Authorization, Content-Type, Accept")
             w.Header().Set("Access-Control-Allow-Origin", "*")
             w.Header().Set("Content-Type", "application/json")
-
-            //Caches result for for future use 
-            log.Println("log for search:", s,"award result",  award)
             c.Set(s, award, cache.DefaultExpiration)
 
             json.NewEncoder(w).Encode(award)
