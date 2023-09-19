@@ -5,14 +5,18 @@ import (
 	"log"
 	"net/http"
 	"os"
+    "time"
     "github.com/joeymhills/go-sql-api/handlers"
+	"github.com/patrickmn/go-cache"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
 
 func main() {
-   
+
+    os.Setenv("DSN", "p84ukd66j3gmsrwjxs5m:pscale_pw_eFTLwJKcXdQC87lzt3CFky1oLjMyRxkxm8bGjULacu8@tcp(aws.connect.psdb.cloud)/nyu-db?tls=true&interpolateParams=true")
+    c := cache.New(1*time.Minute, 10*time.Minute)
 
 	db, err := sql.Open("mysql", os.Getenv("DSN"))
 	if err != nil {
@@ -20,7 +24,7 @@ func main() {
 	}
     log.Println("DB connected and ready to serve🫡🫡🫡🫡🫡 ")
 
-	http.HandleFunc("/find", handlers.FindAward(db))
+	http.HandleFunc("/find", handlers.FindAward(db, c))
 	http.HandleFunc("/getusers", handlers.GetUsers(db))
 	http.HandleFunc("/getdeleted", handlers.GetDeleted(db))
 	http.HandleFunc("/search", handlers.SearchAwards(db))

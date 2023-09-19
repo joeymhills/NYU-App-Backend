@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"github.com/patrickmn/go-cache"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -122,7 +123,7 @@ func RecentAwards(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func FindAward(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
+func FindAward(db *sql.DB, c *cache.Cache) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		search, err := io.ReadAll(r.Body)
@@ -131,8 +132,7 @@ func FindAward(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
         }
         s := string(search)
 
-    //checks to see if s is in quotes, if so, removes them
-
+        //removes quotes, if any
         if len(s) > 0 && s[0] == '"' {
             s = s[1:]
         }
@@ -140,6 +140,16 @@ func FindAward(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
             s = s[:len(s)-1]
         }
 
+        //checks go-cache first
+        cacheResult, found := c.Get(s)
+        
+        if found {
+		json.NewEncoder(w).Encode(cacheResult)
+        log.Println("cache hit!")
+        return
+        }
+        
+        //then queries database if nothing in cache
 		award := Award{}
         row := db.QueryRow("SELECT id, name, institution, outcome, serviceLine, extSource, intSource, messaging, comments, frequency, notifDate, cmcontact, sourceatr, wherepubint, promotionlim, IFNULL(expirationDate,''), IFNULL(effectiveDate,''), IFNULL(imgurl1,''),IFNULL(imgurl2,''),IFNULL(imgurl3,''), IFNULL(imgurl4,''), supported, createdAt FROM accolade WHERE id=?", s)
         switch err := row.Scan(&award.Id, &award.Name, &award.Institution, &award.Outcome, &award.ServiceLine,
@@ -159,7 +169,11 @@ func FindAward(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Headers", "Origin, Authorization, Content-Type, Accept")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(award)
+        
+        //Caches result for for future use 
+        c.Set(s, award, cache.DefaultExpiration)
+		
+        json.NewEncoder(w).Encode(award)
 	}
 }
 
