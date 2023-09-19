@@ -28,6 +28,8 @@ func main() {
 	http.HandleFunc("/getdeleted", handlers.GetDeleted(db))
 	http.HandleFunc("/search", handlers.SearchAwards(db))
 	http.HandleFunc("/recentawards", handlers.RecentAwards(db))
+    http.HandleFunc("/update", handlers.UpdateAward(db, c))
+
 	
     port := os.Getenv("PORT")
 	if port == "" {
