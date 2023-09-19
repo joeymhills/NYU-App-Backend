@@ -281,7 +281,7 @@ func Auth(db *sql.DB, c *cache.Cache) func(w http.ResponseWriter, r *http.Reques
         }
 
         user := User{}
-        row := db.QueryRow("SELECT * FROM user WHERE email=?", email)
+        row := db.QueryRow("SELECT * FROM user WHERE email = ?", email)
         
         switch err := row.Scan(&user.Id, &user.Name, &user.Email, &user.Role);
         err {

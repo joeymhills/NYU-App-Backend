@@ -29,7 +29,7 @@ func main() {
 	http.HandleFunc("/search", handlers.SearchAwards(db))
 	http.HandleFunc("/recentawards", handlers.RecentAwards(db))
     http.HandleFunc("/update", handlers.UpdateAward(db, c))
-
+    http.HandleFunc("/auth", handlers.Auth(db, c))
 	
     port := os.Getenv("PORT")
 	if port == "" {
