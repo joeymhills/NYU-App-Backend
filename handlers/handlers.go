@@ -94,10 +94,8 @@ func UpdateAward(db *sql.DB, c *cache.Cache) func(w http.ResponseWriter, r *http
 
         log.Println("log right after unmarshall", award) 
 
-        if err != nil {
-            panic(err)
-        }
             //then queries database if nothing in cache
+        
         db.Exec("UPDATE accolade SET name = ?, institution = ?, outcome = ?, serviceLine = ?, extSource = ?, intSource = ?, messaging = ?, comments = ?, frequency = ?, notifDate = ?, cmcontact = ?, sourceatr = ?, wherepubint = ?, promotionlim = ?, expirationDate = ?, effectiveDate = ?, imgurl1 = ?, imgurl2 = ?, imgurl3 = ?, imgurl4 = ?, supported = ?, createdAt = ? WHERE id = ?",
         award.Name, award.Institution, award.Outcome, award.ServiceLine, award.ExtSource, award.IntSource, award.Messaging, award.Comments, award.Frequency, award.NotifDate, award.Cmcontact, award.Sourceatr, award.Wherepubint, award.Promotionlim, award.ExpirationDate, award.EffectiveDate, award.Imgurl1, award.Imgurl2, award.Imgurl3, award.Imgurl4, award.Supported, award.CreatedAt, award.Id)
 
@@ -274,6 +272,35 @@ func GetUsers(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func Auth(db *sql.DB, c *cache.Cache) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+        email, err := io.ReadAll(r.Body)
+        if err != nil{
+            log.Panic(err)
+        }
+
+        user := User{}
+        row := db.QueryRow("SELECT * FROM user WHERE email=?", email)
+        
+        switch err := row.Scan(&user.Id, &user.Name, &user.Email, &user.Role);
+        err {
+        case sql.ErrNoRows:
+            log.Println("No rows were returned!")
+        case nil:
+            log.Println("success")
+        default:
+            panic(err)
+        }
+
+		// w.Header().Set("Access-Control-Allow-Methods", "GET, PUT, POST")
+
+		w.Header().Set("Access-Control-Allow-Headers", "Origin, Authorization, Content-Type, Accept")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(user)
+	}
+}
 // function that gets all deleted awards from accoladeBackup table
 func GetDeleted(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
