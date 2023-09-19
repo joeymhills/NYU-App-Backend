@@ -124,7 +124,7 @@ func CreateAward(db *sql.DB, c *cache.Cache) func(w http.ResponseWriter, r *http
 
             //then queries database if nothing in cache
         
-            res, err := db.Exec("INSERT INTO accolade VALUES (id, name, institution, outcome, serviceLine, extSource, intSource, messaging, comments, frequency, notifDate, cmcontact, sourceatr, wherepubint, promotionlim, expirationDate, effectiveDate, imgurl1, imgurl2, imgurl3, imgurl4, supported, createdAt) VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            res, err := db.Exec("INSERT INTO accolade VALUES (id, name, institution, outcome, serviceLine, extSource, intSource, messaging, comments, frequency, notifDate, cmcontact, sourceatr, wherepubint, promotionlim, expirationDate, effectiveDate, imgurl1, imgurl2, imgurl3, imgurl4, supported, createdAt) VALUES (UUID(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         award.Name, award.Institution, award.Outcome, award.ServiceLine, award.ExtSource, award.IntSource, award.Messaging, award.Comments, award.Frequency, award.NotifDate, award.Cmcontact, award.Sourceatr, award.Wherepubint, award.Promotionlim, award.ExpirationDate, award.EffectiveDate, award.Imgurl1, award.Imgurl2, award.Imgurl3, award.Imgurl4, award.Supported, award.CreatedAt)
         if err != nil {
             log.Panic("error at sql query", err)
