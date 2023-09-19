@@ -192,7 +192,6 @@ func FindAward(db *sql.DB, c *cache.Cache) func(w http.ResponseWriter, r *http.R
             }
 
             //Caches result for for future use 
-            log.Println("log for search:", s,"award result",  award)
 
             w.Header().Set("Access-Control-Allow-Headers", "Origin, Authorization, Content-Type, Accept")
             w.Header().Set("Access-Control-Allow-Origin", "*")
