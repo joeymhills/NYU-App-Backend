@@ -15,7 +15,7 @@ import (
 
 func main() {
 
-    c := cache.New(1*time.Minute, 10*time.Minute)
+    c := cache.New(10*time.Second, 1*time.Minute)
 
 	db, err := sql.Open("mysql", os.Getenv("DSN"))
 	if err != nil {
