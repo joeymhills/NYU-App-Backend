@@ -172,7 +172,7 @@ func FindAward(db *sql.DB, c *cache.Cache) func(w http.ResponseWriter, r *http.R
             w.Header().Set("Content-Type", "application/json")
 
             //Caches result for for future use 
-            log.Println(s, award)
+            log.Println("log for search:", s,"award result",  award)
             c.Set(s, award, cache.DefaultExpiration)
 
             json.NewEncoder(w).Encode(award)
