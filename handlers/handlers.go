@@ -124,8 +124,13 @@ func CreateAward(db *sql.DB, c *cache.Cache) func(w http.ResponseWriter, r *http
 
             //then queries database if nothing in cache
         
-        db.Exec("INSERT INTO accolade VALUES name = ?, institution = ?, outcome = ?, serviceLine = ?, extSource = ?, intSource = ?, messaging = ?, comments = ?, frequency = ?, notifDate = ?, cmcontact = ?, sourceatr = ?, wherepubint = ?, promotionlim = ?, expirationDate = ?, effectiveDate = ?, imgurl1 = ?, imgurl2 = ?, imgurl3 = ?, imgurl4 = ?, supported = ?, createdAt = ? WHERE id = ?",
+            res, err := db.Exec("INSERT INTO accolade VALUES name = ?, institution = ?, outcome = ?, serviceLine = ?, extSource = ?, intSource = ?, messaging = ?, comments = ?, frequency = ?, notifDate = ?, cmcontact = ?, sourceatr = ?, wherepubint = ?, promotionlim = ?, expirationDate = ?, effectiveDate = ?, imgurl1 = ?, imgurl2 = ?, imgurl3 = ?, imgurl4 = ?, supported = ?, createdAt = ? WHERE id = ?",
         award.Name, award.Institution, award.Outcome, award.ServiceLine, award.ExtSource, award.IntSource, award.Messaging, award.Comments, award.Frequency, award.NotifDate, award.Cmcontact, award.Sourceatr, award.Wherepubint, award.Promotionlim, award.ExpirationDate, award.EffectiveDate, award.Imgurl1, award.Imgurl2, award.Imgurl3, award.Imgurl4, award.Supported, award.CreatedAt, award.Id)
+        if err != nil {
+            log.Panic("error at sql query", err)
+        }
+        log.Println("res", res)
+
 
             //Caches result for for future use 
 
@@ -133,6 +138,7 @@ func CreateAward(db *sql.DB, c *cache.Cache) func(w http.ResponseWriter, r *http
             w.Header().Set("Access-Control-Allow-Origin", "*")
             w.Header().Set("Content-Type", "application/json")
             c.Set(award.Id, award, cache.DefaultExpiration)
+
         }
 }
 
