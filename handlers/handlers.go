@@ -73,6 +73,7 @@ type DB struct {
 type User struct {
 	Id    int    `json:"id"`
 	Email string `json:"email"`
+    Password string `json:"password"`
 	Name  string `json:"name"`
 	Role  string `json:"role"`
 }
@@ -283,7 +284,7 @@ func Auth(db *sql.DB, c *cache.Cache) func(w http.ResponseWriter, r *http.Reques
         user := User{}
         row := db.QueryRow("SELECT * FROM user WHERE email = ?", email)
         
-        switch err := row.Scan(&user.Id, &user.Name, &user.Email, &user.Role);
+        switch err := row.Scan(&user.Id, &user.Password, &user.Name, &user.Email, &user.Role);
         err {
         case sql.ErrNoRows:
             log.Println("No rows were returned!")
