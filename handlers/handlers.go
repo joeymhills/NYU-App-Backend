@@ -1,11 +1,13 @@
-package handlers 
+package handlers
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"io"
 	"log"
 	"net/http"
+
 	"github.com/patrickmn/go-cache"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -124,9 +126,9 @@ func RecentAwards(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 }
 
 func FindAward(db *sql.DB, c *cache.Cache) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
+    return func(w http.ResponseWriter, r *http.Request) {
 
-		search, err := io.ReadAll(r.Body)
+        search, err := io.ReadAll(r.Body)
         if err != nil {
             panic(err)
         }
@@ -142,39 +144,40 @@ func FindAward(db *sql.DB, c *cache.Cache) func(w http.ResponseWriter, r *http.R
 
         //checks go-cache first
         cacheResult, found := c.Get(s)
-        
         if found {
-		json.NewEncoder(w).Encode(cacheResult)
-        log.Println("cache hit!")
-        return
-        }
-        
-        //then queries database if nothing in cache
-		award := Award{}
-        row := db.QueryRow("SELECT id, name, institution, outcome, serviceLine, extSource, intSource, messaging, comments, frequency, notifDate, cmcontact, sourceatr, wherepubint, promotionlim, IFNULL(expirationDate,''), IFNULL(effectiveDate,''), IFNULL(imgurl1,''),IFNULL(imgurl2,''),IFNULL(imgurl3,''), IFNULL(imgurl4,''), supported, createdAt FROM accolade WHERE id=?", s)
-        switch err := row.Scan(&award.Id, &award.Name, &award.Institution, &award.Outcome, &award.ServiceLine,
-				&award.ExtSource, &award.IntSource, &award.Messaging, &award.Comments, &award.Frequency, &award.NotifDate,
-				&award.Cmcontact, &award.Sourceatr, &award.Wherepubint, &award.Promotionlim, &award.ExpirationDate,
-				&award.EffectiveDate, &award.Imgurl1, &award.Imgurl2, &award.Imgurl3, &award.Imgurl4, &award.Supported, &award.CreatedAt);
+            json.NewEncoder(w).Encode(cacheResult)
+            log.Println("cache hit!", cacheResult)
 
-        err {
-        case sql.ErrNoRows:
-            log.Println("No rows were returned!")
-        case nil:
-            log.Println("success")
-        default:
-            panic(err)
         }
 
-		w.Header().Set("Access-Control-Allow-Headers", "Origin, Authorization, Content-Type, Accept")
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Content-Type", "application/json")
-        
-        //Caches result for for future use 
-        c.Set(s, award, cache.DefaultExpiration)
-		
-        json.NewEncoder(w).Encode(award)
-	}
+        if !found {
+            //then queries database if nothing in cache
+            award := Award{}
+            row := db.QueryRow("SELECT id, name, institution, outcome, serviceLine, extSource, intSource, messaging, comments, frequency, notifDate, cmcontact, sourceatr, wherepubint, promotionlim, IFNULL(expirationDate,''), IFNULL(effectiveDate,''), IFNULL(imgurl1,''),IFNULL(imgurl2,''),IFNULL(imgurl3,''), IFNULL(imgurl4,''), supported, createdAt FROM accolade WHERE id=?", s)
+            switch err := row.Scan(&award.Id, &award.Name, &award.Institution, &award.Outcome, &award.ServiceLine,
+            &award.ExtSource, &award.IntSource, &award.Messaging, &award.Comments, &award.Frequency, &award.NotifDate,
+            &award.Cmcontact, &award.Sourceatr, &award.Wherepubint, &award.Promotionlim, &award.ExpirationDate,
+            &award.EffectiveDate, &award.Imgurl1, &award.Imgurl2, &award.Imgurl3, &award.Imgurl4, &award.Supported, &award.CreatedAt);
+
+            err {
+            case sql.ErrNoRows:
+                log.Println("No rows were returned!")
+            case nil:
+                log.Println("success")
+            default:
+                panic(err)
+            }
+
+            w.Header().Set("Access-Control-Allow-Headers", "Origin, Authorization, Content-Type, Accept")
+            w.Header().Set("Access-Control-Allow-Origin", "*")
+            w.Header().Set("Content-Type", "application/json")
+
+            //Caches result for for future use 
+            c.Set(s, award, cache.DefaultExpiration)
+
+            json.NewEncoder(w).Encode(award)
+        }
+    }
 }
 
 func SearchAwards(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
