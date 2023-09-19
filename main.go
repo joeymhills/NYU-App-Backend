@@ -17,7 +17,7 @@ func main() {
 
     c := cache.New(1*time.Minute, 10*time.Minute)
 
-	db, err := sql.Open("mysql", "DSN")
+	db, err := sql.Open("mysql", os.Getenv("DSN"))
 	if err != nil {
 		log.Fatal(err)
 	}
