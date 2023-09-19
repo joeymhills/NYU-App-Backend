@@ -151,12 +151,10 @@ func FindAward(db *sql.DB, c *cache.Cache) func(w http.ResponseWriter, r *http.R
     return func(w http.ResponseWriter, r *http.Request) {
 
         search, err := io.ReadAll(r.Body)
-        log.Println("log right after request is read", search) 
         if err != nil {
             panic(err)
         }
         s := string(search)
-        log.Println("log directly after request is stringified: ", s)
 
         //removes quotes, if any
         if len(s) > 0 && s[0] == '"' {
@@ -173,7 +171,6 @@ func FindAward(db *sql.DB, c *cache.Cache) func(w http.ResponseWriter, r *http.R
             w.Header().Set("Access-Control-Allow-Origin", "*")
             w.Header().Set("Content-Type", "application/json")
             json.NewEncoder(w).Encode(cacheResult)
-            log.Println("cache hit!", cacheResult)
         }
 
         if !found {
