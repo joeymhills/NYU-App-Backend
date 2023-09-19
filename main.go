@@ -17,7 +17,7 @@ func main() {
 
     c := cache.New(1*time.Minute, 10*time.Minute)
 
-	db, err := sql.Open("mysql", "3sujnpq09n7n64wfzw0o:pscale_pw_kSSIWrx1QEXPwy2J1dCJj0uPiHDx0uvr8AJ4qyN9AOv@tcp(aws.connect.psdb.cloud)/nyu-db?tls=true&interpolateParams=true")
+	db, err := sql.Open("mysql", "DSN")
 	if err != nil {
 		log.Fatal(err)
 	}
