@@ -28,6 +28,7 @@ func main() {
 	http.HandleFunc("/getdeleted", handlers.GetDeleted(db))
 	http.HandleFunc("/search", handlers.SearchAwards(db))
 	http.HandleFunc("/recentawards", handlers.RecentAwards(db))
+    http.HandleFunc("/create", handlers.CreateAward(db, c))
     http.HandleFunc("/update", handlers.UpdateAward(db, c))
     http.HandleFunc("/auth", handlers.Auth(db, c))
 	
