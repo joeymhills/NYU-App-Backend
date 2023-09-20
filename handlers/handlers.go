@@ -280,7 +280,7 @@ func GetUsers(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 
 		users := []User{}
 
-		results, err := db.Query("SELECT id, email, name, role FROM user")
+		results, err := db.Query("SELECT id, email, IFNULL(name,''), role FROM user")
 		if err != nil {
 			panic(err.Error())
 		}
@@ -314,7 +314,7 @@ func Auth(db *sql.DB, c *cache.Cache) func(w http.ResponseWriter, r *http.Reques
         }
 
         user := User{}
-        row := db.QueryRow("SELECT id, password, name, email, role FROM user WHERE email = ?", email)
+        row := db.QueryRow("SELECT id, password, IFNULL(name,''), email, role FROM user WHERE email = ?", email)
         
         switch err := row.Scan(&user.Id, &user.Password, &user.Name, &user.Email, &user.Role);
         err {
