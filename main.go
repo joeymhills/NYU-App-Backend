@@ -15,7 +15,6 @@ import (
 
 func main() {
 
-    os.Setenv("DSN","8db5hcti5s33pdkw4g41:pscale_pw_8F8Uq2dtLWKCCKH0X4p1GFhhBGHWcUzpaYIIDGoxZGo@tcp(aws.connect.psdb.cloud)/nyu-db?tls=true&interpolateParams=true")
     c := cache.New(10*time.Second, 1*time.Minute)
 
 	db, err := sql.Open("mysql", os.Getenv("DSN"))
