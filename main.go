@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
     "time"
-    "sync"
     "github.com/joeymhills/go-sql-api/handlers"
 	"github.com/patrickmn/go-cache"
 
@@ -16,7 +15,7 @@ import (
 
 func main() {
 
-    var wg sync.WaitGroup
+    os.Setenv("DSN","8db5hcti5s33pdkw4g41:pscale_pw_8F8Uq2dtLWKCCKH0X4p1GFhhBGHWcUzpaYIIDGoxZGo@tcp(aws.connect.psdb.cloud)/nyu-db?tls=true&interpolateParams=true")
     c := cache.New(10*time.Second, 1*time.Minute)
 
 	db, err := sql.Open("mysql", os.Getenv("DSN"))
@@ -25,7 +24,7 @@ func main() {
 	}
     log.Println("DB connected and ready to serve🫡🫡🫡🫡🫡 ")
 
-	http.HandleFunc("/changerole", handlers.ChangeRole(db, &wg))
+	http.HandleFunc("/changerole", handlers.ChangeRole(db))
 	http.HandleFunc("/find", handlers.FindAward(db, c))
 	http.HandleFunc("/getusers", handlers.GetUsers(db))
 	http.HandleFunc("/getdeleted", handlers.GetDeleted(db))

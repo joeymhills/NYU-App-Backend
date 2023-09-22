@@ -6,7 +6,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-    "sync"
 
 	"github.com/patrickmn/go-cache"
 
@@ -281,7 +280,7 @@ func SearchAwards(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 //TODO: Add the functionality to return users array in order to refresh users
-func ChangeRole(db *sql.DB, wg *sync.WaitGroup) func(w http.ResponseWriter, r *http.Request) {
+func ChangeRole(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
     return func(w http.ResponseWriter, r *http.Request) {
         
         req := RoleChange{}
@@ -295,36 +294,34 @@ func ChangeRole(db *sql.DB, wg *sync.WaitGroup) func(w http.ResponseWriter, r *h
             log.Fatal(err)
         }
 
-        wg.Add(1)
         _, err = db.Exec("UPDATE user SET role = ? WHERE id = ?", req.Role, req.Id)
         if err != nil{
             log.Fatal(err)
         }
 
-        wg.Done()
-        users := []User{}
-        wg.Wait()
-        results, err := db.Query("SELECT id, email, IFNULL(name,''), role FROM user")
-        if err != nil {
-            panic(err.Error())
-        }
-        for results.Next() {
-            var user User
-            err = results.Scan(&user.Id, &user.Name, &user.Email, &user.Role)
-            if err != nil {
-                panic(err.Error()) // proper error handling instead of panic in your apps
-            }
-            person := User{
-                Id: user.Id, Name: user.Name, Email: user.Email, Role: user.Role,
-            }
-            users = append(users, person)
-            // w.Header().Set("Access-Control-Allow-Methods", "GET, PUT, POST")
+		users := []User{}
+		results, err := db.Query("SELECT id, email, IFNULL(name,''), role FROM user")
+		if err != nil {
+			panic(err.Error())
+		}
+		for results.Next() {
+			var user User
+			err = results.Scan(&user.Id, &user.Name, &user.Email, &user.Role)
+			if err != nil {
+				panic(err.Error()) // proper error handling instead of panic in your apps
+			}
+			person := User{
+				Id: user.Id, Name: user.Name, Email: user.Email, Role: user.Role,
+			}
+			users = append(users, person)
+		}
 
-            w.Header().Set("Access-Control-Allow-Headers", "Origin, Authorization, Content-Type, Accept")
-            w.Header().Set("Access-Control-Allow-Origin", "*")
-            w.Header().Set("Content-Type", "application/json")
-            json.NewEncoder(w).Encode(users)
-        }
+		// w.Header().Set("Access-Control-Allow-Methods", "GET, PUT, POST")
+
+		w.Header().Set("Access-Control-Allow-Headers", "Origin, Authorization, Content-Type, Accept")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(users)
     }}
 
 func GetUsers(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
