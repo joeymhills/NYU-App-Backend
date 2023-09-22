@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
     "time"
+    "sync"
     "github.com/joeymhills/go-sql-api/handlers"
 	"github.com/patrickmn/go-cache"
 
@@ -15,6 +16,7 @@ import (
 
 func main() {
 
+    var wg sync.WaitGroup
     c := cache.New(10*time.Second, 1*time.Minute)
 
 	db, err := sql.Open("mysql", os.Getenv("DSN"))
@@ -23,6 +25,7 @@ func main() {
 	}
     log.Println("DB connected and ready to serve🫡🫡🫡🫡🫡 ")
 
+	http.HandleFunc("/changerole", handlers.ChangeRole(db, &wg))
 	http.HandleFunc("/find", handlers.FindAward(db, c))
 	http.HandleFunc("/getusers", handlers.GetUsers(db))
 	http.HandleFunc("/getdeleted", handlers.GetDeleted(db))
@@ -30,7 +33,6 @@ func main() {
 	http.HandleFunc("/recentawards", handlers.RecentAwards(db))
     http.HandleFunc("/create", handlers.CreateAward(db, c))
     http.HandleFunc("/update", handlers.UpdateAward(db, c))
-    http.HandleFunc("/auth", handlers.Auth(db, c))
 	
     port := os.Getenv("PORT")
 	if port == "" {
